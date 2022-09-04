@@ -1,7 +1,9 @@
 import Notiflix from 'notiflix';
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 
 import { fetchImages } from "./fetchImages";
-import renderGallery  from "./templates/renderGallery.hbs";
+import {renderGallery}  from "./renderGallery";
 
 export{ onLoadMoreBtn }
 
@@ -17,16 +19,6 @@ const perPage = 40;
 
 searchForm.addEventListener('submit', onSearchForm);
 loadMoreBtn.addEventListener('click', onLoadMoreBtn);
-
-function renderGallery(images) {
-    const markup = images.map(image => {
-        const { id, largeImageURL, webformatURL, tags, likes, views, comments, downloads } = image;
-        gallery.insertAdjacentHTML('beforeend', markup)
-        // return; 
-       
-    },
-  
-)}
 
 function onSearchForm(e) {
     e.preventDefault();
@@ -44,9 +36,9 @@ function onSearchForm(e) {
         .then(({ data }) => {
             if (data.totalHits === 0) {
                 noImagesFound()
-            } else {
+            }  else {
                 renderGallery(data.hits)
-              
+                simpleLightBox = new SimpleLightbox('.gallery a').refresh()
                 alertImagesFound(data)
                  if (data.totalHits > perPage) {
                      loadMoreBtn.classList.remove('is-hidden')
@@ -55,14 +47,14 @@ function onSearchForm(e) {
           })
     .catch(error => console.log(error))
 }
-
     function onLoadMoreBtn() {
       page += 1
+      simpleLightBox.destroy()
        
         fetchImages(query, page, perPage)
             .then(({ data }) => {
             renderGallery(data.hits)
-        
+            simpleLightBox = new SimpleLightbox('.gallery a').refresh()
         loading.classList.remove('show');
         const totalPages = Math.ceil(data.totalHits / perPage)
                 if (page > totalPages) {
@@ -73,7 +65,7 @@ function onSearchForm(e) {
                 loadMoreImages ()
                 }
             })
-    // .catch(error => console.log(error))
+    .catch(error => console.log(error))
 }
   
 
