@@ -1,24 +1,24 @@
-import Notiflix from 'notiflix';
+import { fetchImages } from './fetchImages'
+import { renderGallery } from './renderGallery'
+
+import Notiflix from 'notiflix'
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 
-import { fetchImages } from "./fetchImages";
-import {renderGallery}  from "./renderGallery";
-
-export{ onLoadMoreBtn }
 
 const searchForm = document.querySelector('#search-form')
 const gallery = document.querySelector('.gallery')
 const loadMoreBtn = document.querySelector('.btn-load-more')
 const loading = document.querySelector('.loading');
 
-
 let query = '';
 let page = 1;
+let simpleLightBox;
 const perPage = 40;
 
 searchForm.addEventListener('submit', onSearchForm);
 loadMoreBtn.addEventListener('click', onLoadMoreBtn);
+
 
 function onSearchForm(e) {
     e.preventDefault();
@@ -35,8 +35,8 @@ function onSearchForm(e) {
     fetchImages(query, page, perPage)
         .then(({ data }) => {
             if (data.totalHits === 0) {
-                noImagesFound()
-            }  else {
+                alertNoImagesFound()
+            } else {
                 renderGallery(data.hits)
                 simpleLightBox = new SimpleLightbox('.gallery a').refresh()
                 alertImagesFound(data)
@@ -47,9 +47,10 @@ function onSearchForm(e) {
           })
     .catch(error => console.log(error))
 }
+
     function onLoadMoreBtn() {
       page += 1
-      simpleLightBox.destroy()
+        simpleLightBox.destroy()
        
         fetchImages(query, page, perPage)
             .then(({ data }) => {
@@ -62,25 +63,24 @@ function onSearchForm(e) {
                 loadMoreBtn.classList.add('is-hidden')
             
 
-                loadMoreImages ()
+                alertEndOfSearch()
                 }
             })
     .catch(error => console.log(error))
 }
-  
-
+        
 function alertImagesFound(data) {
-    Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`)
-  }
-    
-function loadMoreImages () {
-    Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
-  }
-
-function noImagesFound() {
-Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.')
+  Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`)
 }
 
+function alertNoEmptySearch() {
+     Notiflix.Notify.failure('The search string cannot be empty. Please specify your search query.')
+}
 
-        
-    
+function alertNoImagesFound() {
+  Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.')
+}
+
+function alertEndOfSearch() {
+  Notiflix.Notify.failure('We are sorry, but you have reached the end of search results.')
+}
