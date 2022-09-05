@@ -48,7 +48,8 @@ function onSearchForm(e) {
     .catch(error => console.log(error))
 }
 
-    function onLoadMoreBtn() {
+ function onLoadMoreBtn()
+     {
       page += 1
         simpleLightBox.destroy()
        
@@ -57,7 +58,8 @@ function onSearchForm(e) {
             renderGallery(data.hits)
             simpleLightBox = new SimpleLightbox('.gallery a').refresh()
         loading.classList.remove('show');
-        const totalPages = Math.ceil(data.totalHits / perPage)
+        const totalPages =  data.totalHits / perPage
+
                 if (page > totalPages) {
                 
                 loadMoreBtn.classList.add('is-hidden')
